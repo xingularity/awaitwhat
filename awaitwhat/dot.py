@@ -1,7 +1,7 @@
 import asyncio
 import io
+import itertools
 import json
-import random
 import re
 from .blocker import blockers
 from .stack import task_print_stack
@@ -56,7 +56,8 @@ def dumps(tasks):
         current = asyncio.current_task()
     except RuntimeError:
         current = None
-    stops = {t: blockers(t) or [f"<Not blocked {random.random()}>"] for t in tasks}
+    counter = itertools.count()
+    stops = {t: blockers(t) or [f"<Not blocked {next(counter)}>"] for t in tasks}
     nodes = set(sum(stops.values(), list(stops.keys())))
     nodes = "\n        ".join(f"{id(t)} {describe(t, current)}" for t in nodes)
 
