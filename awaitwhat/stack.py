@@ -37,11 +37,12 @@ def extend_stack(s, limit=None):
             if inspect.iscoroutine(n) and n.cr_code is asyncio.sleep.__code__:
                 info = inspect.getcoroutinelocals(n)
                 delay = info["delay"]
-                when = info["h"]._when
-                # FIXME: `when` appears to be an offset from event loop start
+                h = info["h"]
+                remaining = h._when - h._loop.time()
                 stack.append(
                     FakeFrame(
-                        f"asyncio.sleep({delay}), when: {when}", filename="asyncio"
+                        f"asyncio.sleep({delay}), remaining: {remaining}",
+                        filename="asyncio",
                     )
                 )
                 continue
